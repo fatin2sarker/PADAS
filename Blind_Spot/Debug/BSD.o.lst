@@ -1,0 +1,399 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "BSD.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.checkBlindSpot,"ax",%progbits
+  20              	 .align 2
+  21              	 .global checkBlindSpot
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	checkBlindSpot:
+  26              	.LFB133:
+  27              	 .file 1 "../BSD.c"
+   1:../BSD.c      **** /*
+   2:../BSD.c      ****  * BSD.c
+   3:../BSD.c      ****  *
+   4:../BSD.c      ****  *  Created on: Jul 24, 2023
+   5:../BSD.c      ****  *      Author: fatin
+   6:../BSD.c      ****  */
+   7:../BSD.c      **** 
+   8:../BSD.c      **** #include "BSD.h"
+   9:../BSD.c      **** #include <stdio.h>
+  10:../BSD.c      **** #include <stdbool.h>
+  11:../BSD.c      **** #include <stdint.h>
+  12:../BSD.c      **** 
+  13:../BSD.c      **** 
+  14:../BSD.c      **** //// Function to create a delay in microseconds using SysTick
+  15:../BSD.c      **** //void delay(uint32_t microseconds)
+  16:../BSD.c      **** //{
+  17:../BSD.c      **** //    // Calculate the number of ticks needed for the given delay
+  18:../BSD.c      **** //    uint32_t ticks = (microseconds * SystemCoreClock) / 1000000;
+  19:../BSD.c      **** //
+  20:../BSD.c      **** //    // Disable SysTick during configuration
+  21:../BSD.c      **** //    SysTick->CTRL = 0;
+  22:../BSD.c      **** //
+  23:../BSD.c      **** //    // Load the initial value to the SysTick Timer
+  24:../BSD.c      **** //    SysTick->LOAD = ticks - 1;
+  25:../BSD.c      **** //
+  26:../BSD.c      **** //    // Set the current value to 0
+  27:../BSD.c      **** //    SysTick->VAL = 0;
+  28:../BSD.c      **** //
+  29:../BSD.c      **** //    // Enable SysTick with the desired clock source (usually System Clock)
+  30:../BSD.c      **** //    SysTick->CTRL = SysTick_CTRL_ENABLE_Msk | SysTick_CTRL_CLKSOURCE_Msk;
+  31:../BSD.c      **** //
+  32:../BSD.c      **** //    // Wait for the count flag to be set (indicating the delay has elapsed)
+  33:../BSD.c      **** //    while ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0)
+  34:../BSD.c      **** //    {
+  35:../BSD.c      **** //        // Wait
+  36:../BSD.c      **** //    }
+  37:../BSD.c      **** //
+  38:../BSD.c      **** //    // Disable SysTick after the delay has elapsed
+  39:../BSD.c      **** //    SysTick->CTRL = 0;
+  40:../BSD.c      **** //}
+  41:../BSD.c      **** 
+  42:../BSD.c      **** // Function for blind spot detection
+  43:../BSD.c      **** void checkBlindSpot()
+  44:../BSD.c      **** {
+  28              	 .loc 1 44 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32 0000 80B5     	 push {r7,lr}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 8
+  35              	 .cfi_offset 7,-8
+  36              	 .cfi_offset 14,-4
+  37 0002 84B0     	 sub sp,sp,#16
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  45:../BSD.c      ****     // Get radar data
+  46:../BSD.c      ****     float radarDistance = getRadarDistance(); // Replace with appropriate radar data retrieval func
+  43              	 .loc 1 46 0
+  44 0006 FFF7FEFF 	 bl getRadarDistance
+  45 000a F860     	 str r0,[r7,#12]
+  47:../BSD.c      ****     float radarSpeed = getRadarSpeed();       // Replace with appropriate radar data retrieval func
+  46              	 .loc 1 47 0
+  47 000c FFF7FEFF 	 bl getRadarSpeed
+  48 0010 07EE900A 	 fmsr s15,r0
+  49 0014 F8EEE77A 	 fsitos s15,s15
+  50 0018 C7ED027A 	 fsts s15,[r7,#8]
+  48:../BSD.c      **** 
+  49:../BSD.c      ****     // Process radar data
+  50:../BSD.c      ****     radarDataProcessing(radarDistance, radarSpeed);
+  51              	 .loc 1 50 0
+  52 001c F868     	 ldr r0,[r7,#12]
+  53 001e B968     	 ldr r1,[r7,#8]
+  54 0020 FFF7FEFF 	 bl radarDataProcessing
+  51:../BSD.c      **** 
+  52:../BSD.c      ****     // Get sensor data
+  53:../BSD.c      ****     float leftSensorDistance = getLeftSensorDistance();   // Replace with appropriate left sensor d
+  55              	 .loc 1 53 0
+  56 0024 FFF7FEFF 	 bl getLeftSensorDistance
+  57 0028 07EE900A 	 fmsr s15,r0
+  58 002c F8EEE77A 	 fsitos s15,s15
+  59 0030 C7ED017A 	 fsts s15,[r7,#4]
+  54:../BSD.c      ****     float rightSensorDistance = getRightSensorDistance(); // Replace with appropriate right sensor 
+  60              	 .loc 1 54 0
+  61 0034 FFF7FEFF 	 bl getRightSensorDistance
+  62 0038 07EE900A 	 fmsr s15,r0
+  63 003c F8EEE77A 	 fsitos s15,s15
+  64 0040 C7ED007A 	 fsts s15,[r7]
+  55:../BSD.c      **** 
+  56:../BSD.c      ****     // Process sensor data
+  57:../BSD.c      ****     leftSensorDataProcessing(leftSensorDistance);
+  65              	 .loc 1 57 0
+  66 0044 7868     	 ldr r0,[r7,#4]
+  67 0046 FFF7FEFF 	 bl leftSensorDataProcessing
+  58:../BSD.c      ****     rightSensorDataProcessing(rightSensorDistance);
+  68              	 .loc 1 58 0
+  69 004a 3868     	 ldr r0,[r7]
+  70 004c FFF7FEFF 	 bl rightSensorDataProcessing
+  59:../BSD.c      **** }
+  71              	 .loc 1 59 0
+  72 0050 1037     	 adds r7,r7,#16
+  73              	.LCFI3:
+  74              	 .cfi_def_cfa_offset 8
+  75 0052 BD46     	 mov sp,r7
+  76              	.LCFI4:
+  77              	 .cfi_def_cfa_register 13
+  78              	 
+  79 0054 80BD     	 pop {r7,pc}
+  80              	 .cfi_endproc
+  81              	.LFE133:
+  83              	 .global __aeabi_f2d
+  84              	 .global __aeabi_i2d
+  85              	 .global __aeabi_dcmpgt
+  86 0056 00BF     	 .section .rodata
+  87              	 .align 2
+  88              	.LC0:
+  89 0000 426C696E 	 .ascii "Blind spot detected!\000"
+  89      64207370 
+  89      6F742064 
+  89      65746563 
+  89      74656421 
+  90              	 .section .text.radarDataProcessing,"ax",%progbits
+  91              	 .align 2
+  92              	 .global radarDataProcessing
+  93              	 .thumb
+  94              	 .thumb_func
+  96              	radarDataProcessing:
+  97              	.LFB134:
+  60:../BSD.c      **** 
+  61:../BSD.c      **** // Process radar data for blind spot detection
+  62:../BSD.c      **** void radarDataProcessing(float distance, float speed)
+  63:../BSD.c      **** {
+  98              	 .loc 1 63 0
+  99              	 .cfi_startproc
+ 100              	 
+ 101              	 
+ 102 0000 80B5     	 push {r7,lr}
+ 103              	.LCFI5:
+ 104              	 .cfi_def_cfa_offset 8
+ 105              	 .cfi_offset 7,-8
+ 106              	 .cfi_offset 14,-4
+ 107 0002 82B0     	 sub sp,sp,#8
+ 108              	.LCFI6:
+ 109              	 .cfi_def_cfa_offset 16
+ 110 0004 00AF     	 add r7,sp,#0
+ 111              	.LCFI7:
+ 112              	 .cfi_def_cfa_register 7
+ 113 0006 7860     	 str r0,[r7,#4]
+ 114 0008 3960     	 str r1,[r7]
+ 115              	.LBB2:
+  64:../BSD.c      ****     // Check if the target is within the blind spot
+  65:../BSD.c      ****     if (distance < DISTANCE_THRESHOLD && abs(speed) > SPEED_THRESHOLD)
+ 116              	 .loc 1 65 0
+ 117 000a D7ED017A 	 flds s15,[r7,#4]
+ 118 000e B1EE0C7A 	 fconsts s14,#28
+ 119 0012 F4EEC77A 	 fcmpes s15,s14
+ 120 0016 F1EE10FA 	 fmstat
+ 121 001a 1BD5     	 bpl .L2
+ 122              	 .loc 1 65 0 is_stmt 0 discriminator 1
+ 123 001c 3868     	 ldr r0,[r7]
+ 124 001e FFF7FEFF 	 bl __aeabi_f2d
+ 125 0022 0246     	 mov r2,r0
+ 126 0024 0B46     	 mov r3,r1
+ 127 0026 1046     	 mov r0,r2
+ 128 0028 1946     	 mov r1,r3
+ 129 002a FFF7FEFF 	 bl abs
+ 130 002e 0346     	 mov r3,r0
+ 131 0030 1846     	 mov r0,r3
+ 132 0032 FFF7FEFF 	 bl __aeabi_i2d
+ 133 0036 0246     	 mov r2,r0
+ 134 0038 0B46     	 mov r3,r1
+ 135 003a 1046     	 mov r0,r2
+ 136 003c 1946     	 mov r1,r3
+ 137 003e 4FF00002 	 mov r2,#0
+ 138 0042 064B     	 ldr r3,.L8
+ 139 0044 FFF7FEFF 	 bl __aeabi_dcmpgt
+ 140 0048 0346     	 mov r3,r0
+ 141 004a 002B     	 cmp r3,#0
+ 142 004c 02D0     	 beq .L2
+  66:../BSD.c      ****     {
+  67:../BSD.c      ****         printf("Blind spot detected!\n");
+ 143              	 .loc 1 67 0 is_stmt 1
+ 144 004e 0448     	 ldr r0,.L8+4
+ 145 0050 FFF7FEFF 	 bl puts
+ 146              	.L2:
+ 147              	.LBE2:
+  68:../BSD.c      ****         // Perform action here, activating an alarm or sending a warning
+  69:../BSD.c      ****     }
+  70:../BSD.c      **** }
+ 148              	 .loc 1 70 0
+ 149 0054 0837     	 adds r7,r7,#8
+ 150              	.LCFI8:
+ 151              	 .cfi_def_cfa_offset 8
+ 152 0056 BD46     	 mov sp,r7
+ 153              	.LCFI9:
+ 154              	 .cfi_def_cfa_register 13
+ 155              	 
+ 156 0058 80BD     	 pop {r7,pc}
+ 157              	.L9:
+ 158 005a 00BF     	 .align 2
+ 159              	.L8:
+ 160 005c 00001440 	 .word 1075052544
+ 161 0060 00000000 	 .word .LC0
+ 162              	 .cfi_endproc
+ 163              	.LFE134:
+ 165              	 .section .rodata
+ 166 0015 000000   	 .align 2
+ 167              	.LC1:
+ 168 0018 4F626A65 	 .ascii "Object detected in the left blind spot!\000"
+ 168      63742064 
+ 168      65746563 
+ 168      74656420 
+ 168      696E2074 
+ 169              	 .section .text.leftSensorDataProcessing,"ax",%progbits
+ 170              	 .align 2
+ 171              	 .global leftSensorDataProcessing
+ 172              	 .thumb
+ 173              	 .thumb_func
+ 175              	leftSensorDataProcessing:
+ 176              	.LFB135:
+  71:../BSD.c      **** 
+  72:../BSD.c      **** // Process left sensor data for blind spot detection
+  73:../BSD.c      **** void leftSensorDataProcessing(float distance)
+  74:../BSD.c      **** {
+ 177              	 .loc 1 74 0
+ 178              	 .cfi_startproc
+ 179              	 
+ 180              	 
+ 181 0000 80B5     	 push {r7,lr}
+ 182              	.LCFI10:
+ 183              	 .cfi_def_cfa_offset 8
+ 184              	 .cfi_offset 7,-8
+ 185              	 .cfi_offset 14,-4
+ 186 0002 82B0     	 sub sp,sp,#8
+ 187              	.LCFI11:
+ 188              	 .cfi_def_cfa_offset 16
+ 189 0004 00AF     	 add r7,sp,#0
+ 190              	.LCFI12:
+ 191              	 .cfi_def_cfa_register 7
+ 192 0006 7860     	 str r0,[r7,#4]
+  75:../BSD.c      ****     if (distance < DISTANCE_THRESHOLD)
+ 193              	 .loc 1 75 0
+ 194 0008 D7ED017A 	 flds s15,[r7,#4]
+ 195 000c B1EE0C7A 	 fconsts s14,#28
+ 196 0010 F4EEC77A 	 fcmpes s15,s14
+ 197 0014 F1EE10FA 	 fmstat
+ 198 0018 02D5     	 bpl .L10
+  76:../BSD.c      ****     {
+  77:../BSD.c      ****         printf("Object detected in the left blind spot!\n");
+ 199              	 .loc 1 77 0
+ 200 001a 0348     	 ldr r0,.L14
+ 201 001c FFF7FEFF 	 bl puts
+ 202              	.L10:
+  78:../BSD.c      ****         // Perform action here, sending a warning
+  79:../BSD.c      ****     }
+  80:../BSD.c      **** }
+ 203              	 .loc 1 80 0
+ 204 0020 0837     	 adds r7,r7,#8
+ 205              	.LCFI13:
+ 206              	 .cfi_def_cfa_offset 8
+ 207 0022 BD46     	 mov sp,r7
+ 208              	.LCFI14:
+ 209              	 .cfi_def_cfa_register 13
+ 210              	 
+ 211 0024 80BD     	 pop {r7,pc}
+ 212              	.L15:
+ 213 0026 00BF     	 .align 2
+ 214              	.L14:
+ 215 0028 18000000 	 .word .LC1
+ 216              	 .cfi_endproc
+ 217              	.LFE135:
+ 219              	 .section .rodata
+ 220              	 .align 2
+ 221              	.LC2:
+ 222 0040 4F626A65 	 .ascii "Object detected in the right blind spot!\000"
+ 222      63742064 
+ 222      65746563 
+ 222      74656420 
+ 222      696E2074 
+ 223 0069 000000   	 .section .text.rightSensorDataProcessing,"ax",%progbits
+ 224              	 .align 2
+ 225              	 .global rightSensorDataProcessing
+ 226              	 .thumb
+ 227              	 .thumb_func
+ 229              	rightSensorDataProcessing:
+ 230              	.LFB136:
+  81:../BSD.c      **** 
+  82:../BSD.c      **** // Process right sensor data for blind spot detection
+  83:../BSD.c      **** void rightSensorDataProcessing(float distance)
+  84:../BSD.c      **** {
+ 231              	 .loc 1 84 0
+ 232              	 .cfi_startproc
+ 233              	 
+ 234              	 
+ 235 0000 80B5     	 push {r7,lr}
+ 236              	.LCFI15:
+ 237              	 .cfi_def_cfa_offset 8
+ 238              	 .cfi_offset 7,-8
+ 239              	 .cfi_offset 14,-4
+ 240 0002 82B0     	 sub sp,sp,#8
+ 241              	.LCFI16:
+ 242              	 .cfi_def_cfa_offset 16
+ 243 0004 00AF     	 add r7,sp,#0
+ 244              	.LCFI17:
+ 245              	 .cfi_def_cfa_register 7
+ 246 0006 7860     	 str r0,[r7,#4]
+  85:../BSD.c      ****     if (distance < DISTANCE_THRESHOLD)
+ 247              	 .loc 1 85 0
+ 248 0008 D7ED017A 	 flds s15,[r7,#4]
+ 249 000c B1EE0C7A 	 fconsts s14,#28
+ 250 0010 F4EEC77A 	 fcmpes s15,s14
+ 251 0014 F1EE10FA 	 fmstat
+ 252 0018 02D5     	 bpl .L16
+  86:../BSD.c      ****     {
+  87:../BSD.c      ****         printf("Object detected in the right blind spot!\n");
+ 253              	 .loc 1 87 0
+ 254 001a 0348     	 ldr r0,.L20
+ 255 001c FFF7FEFF 	 bl puts
+ 256              	.L16:
+  88:../BSD.c      ****         // Perform action here, sending a warning
+  89:../BSD.c      ****     }
+  90:../BSD.c      **** }
+ 257              	 .loc 1 90 0
+ 258 0020 0837     	 adds r7,r7,#8
+ 259              	.LCFI18:
+ 260              	 .cfi_def_cfa_offset 8
+ 261 0022 BD46     	 mov sp,r7
+ 262              	.LCFI19:
+ 263              	 .cfi_def_cfa_register 13
+ 264              	 
+ 265 0024 80BD     	 pop {r7,pc}
+ 266              	.L21:
+ 267 0026 00BF     	 .align 2
+ 268              	.L20:
+ 269 0028 40000000 	 .word .LC2
+ 270              	 .cfi_endproc
+ 271              	.LFE136:
+ 273              	 .text
+ 274              	.Letext0:
+ 275              	 .file 2 "c:\\infineon\\tools\\dave ide\\4.5.0.202105191637\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 276              	 .file 3 "c:\\infineon\\tools\\dave ide\\4.5.0.202105191637\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 277              	 .file 4 "C:/Users/fatin/OneDrive - University of Waterloo/Desktop/ECE 498A/BSD/Blind_Spot/Libraries/CMSIS/Include/cmsis_gcc.h"
+ 278              	 .file 5 "C:/Users/fatin/OneDrive - University of Waterloo/Desktop/ECE 498A/BSD/Blind_Spot/Libraries/CMSIS/Include/core_cm4.h"
+ 279              	 .file 6 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 BSD.c
+    {standard input}:20     .text.checkBlindSpot:00000000 $t
+    {standard input}:25     .text.checkBlindSpot:00000000 checkBlindSpot
+    {standard input}:96     .text.radarDataProcessing:00000000 radarDataProcessing
+    {standard input}:175    .text.leftSensorDataProcessing:00000000 leftSensorDataProcessing
+    {standard input}:229    .text.rightSensorDataProcessing:00000000 rightSensorDataProcessing
+    {standard input}:87     .rodata:00000000 $d
+    {standard input}:91     .text.radarDataProcessing:00000000 $t
+    {standard input}:160    .text.radarDataProcessing:0000005c $d
+    {standard input}:170    .text.leftSensorDataProcessing:00000000 $t
+    {standard input}:215    .text.leftSensorDataProcessing:00000028 $d
+    {standard input}:224    .text.rightSensorDataProcessing:00000000 $t
+    {standard input}:269    .text.rightSensorDataProcessing:00000028 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+getRadarDistance
+getRadarSpeed
+getLeftSensorDistance
+getRightSensorDistance
+__aeabi_f2d
+__aeabi_i2d
+__aeabi_dcmpgt
+abs
+puts
