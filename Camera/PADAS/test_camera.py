@@ -3,7 +3,7 @@ import time
 from ArducamSDK import *
 
 # Load the configuration file
-config_file = ".\Config\USB2.0_UC-980_Rev.B\MIPI\OV9281\OV9281_MIPI_2Lane_RAW8_1280x800_90MHz.cfg"
+config_file = "USB2.0_UC-980_Rev.B\MIPI\OV9281\OV9281_MIPI_2Lane_RAW8_1280x800_90MHz.cfg"
 
 # Initialize the camera
 camera_instance = arducam_init_camera(config_file.encode("ascii"))
@@ -28,8 +28,7 @@ try:
         # Convert the frame to a format compatible with OpenCV
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Perform lane detection (replace this with your actual lane detection algorithm)
-        # Example: lane_detection_result = detect_lanes(frame)
+        # Perform lane detection algorithm
 
         # Display the processed frame
         cv2.imshow("Lane Detection", frame)
