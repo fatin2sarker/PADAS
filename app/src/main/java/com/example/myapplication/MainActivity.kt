@@ -30,17 +30,35 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                var isWelcomePageVisible by remember { mutableStateOf(true) }
+                var currentPage by remember { mutableStateOf<Page>(Page.Welcome) }
+                var selectedFeature by remember { mutableStateOf<Feature?>(null) }
 
-                if (isWelcomePageVisible) {
-                    WelcomePage(onContinueClick = { isWelcomePageVisible = false })
-                } else {
-                    MainScreen()
+                when (currentPage) {
+                    Page.Welcome -> WelcomePage { currentPage = Page.FeatureSelection }
+                    Page.FeatureSelection -> FeatureSelectionPage {
+                        selectedFeature = it
+                        currentPage = Page.MainScreen
+                    }
+                    Page.MainScreen -> MainScreen(selectedFeature!!)
                 }
             }
         }
     }
 }
+
+data class LaneDetectionData(
+    val isCarTouchingRightLane: Boolean,
+    val isCarTouchingLeftLane: Boolean
+)
+
+data class BlindSpotData(
+    val isObjectDetectedOnRightBlindSpot: Boolean,
+    val isObjectDetectedOnLeftBlindSpot: Boolean
+)
+
+data class TrafficLightData(
+    val isRedLightDetected: Boolean
+)
 
 @Composable
 fun LaneDetectionTab(isCarTouchingRightLane: Boolean, isCarTouchingLeftLane: Boolean) {
@@ -67,6 +85,19 @@ fun TrafficLightTab(isRedLightDetected: Boolean) {
     Column {
         Text(text = alertText, color = alertColor)
     }
+}
+
+
+sealed class Page {
+    object Welcome : Page()
+    object FeatureSelection : Page()
+    object MainScreen : Page()
+}
+
+sealed class Feature {
+    object LaneDetection : Feature()
+    object BlindSpot : Feature()
+    object TrafficLight : Feature()
 }
 
 @Composable
@@ -96,48 +127,68 @@ fun WelcomePage(onContinueClick: () -> Unit) {
 }
 
 @Composable
-fun MainScreen() {
-    // Mock data, replace with actual data from sensors
+fun FeatureSelectionPage(onFeatureSelected: (Feature) -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Select a feature:",
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { onFeatureSelected(Feature.LaneDetection) },
+                modifier = Modifier.padding(16.dp),
+            ) {
+                Text(text = "Lane Detection", color = Color.White)
+            }
+            Button(
+                onClick = { onFeatureSelected(Feature.BlindSpot) },
+                modifier = Modifier.padding(16.dp),
+            ) {
+                Text(text = "Blind Spot Detection", color = Color.White)
+            }
+            Button(
+                onClick = { onFeatureSelected(Feature.TrafficLight) },
+                modifier = Modifier.padding(16.dp),
+            ) {
+                Text(text = "Traffic Light Recognition", color = Color.White)
+            }
+        }
+    }
+}
+
+@Composable
+fun MainScreen(selectedFeature: Feature) {
+    // Mock data for each feature
     val isCarTouchingRightLane = true
     val isCarTouchingLeftLane = false
     val isObjectDetectedOnRightBlindSpot = false
     val isObjectDetectedOnLeftBlindSpot = true
     val isRedLightDetected = true
 
-    // State variable for selected tab index
-    var selectedTabIndex by remember { mutableStateOf(0) }
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         Column {
-            // Tabs
-            TabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Tab(
-                    text = { Text("Lane Detection") },
-                    selected = selectedTabIndex == 0,
-                    onClick = { selectedTabIndex = 0 }
-                )
-                Tab(
-                    text = { Text("Blind Spot") },
-                    selected = selectedTabIndex == 1,
-                    onClick = { selectedTabIndex = 1 }
-                )
-                Tab(
-                    text = { Text("Traffic Light") },
-                    selected = selectedTabIndex == 2,
-                    onClick = { selectedTabIndex = 2 }
-                )
-            }
-
-            // Tab content based on the selected tab
-            when (selectedTabIndex) {
-                0 -> LaneDetectionTab(isCarTouchingRightLane, isCarTouchingLeftLane)
-                1 -> BlindSpotTab(isObjectDetectedOnRightBlindSpot, isObjectDetectedOnLeftBlindSpot)
-                2 -> TrafficLightTab(isRedLightDetected)
+            when (selectedFeature) {
+                is Feature.LaneDetection -> LaneDetectionTab(isCarTouchingRightLane, isCarTouchingLeftLane)
+                is Feature.BlindSpot -> BlindSpotTab(isObjectDetectedOnRightBlindSpot, isObjectDetectedOnLeftBlindSpot)
+                is Feature.TrafficLight -> TrafficLightTab(isRedLightDetected)
             }
         }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun WelcomePagePreview() {
+    MyApplicationTheme {
+        WelcomePage(onContinueClick = {})
     }
 }
 
@@ -145,14 +196,30 @@ fun MainScreen() {
 @Composable
 fun MainScreenPreview() {
     MyApplicationTheme {
-        MainScreen()
+        MainScreen(selectedFeature = Feature.LaneDetection)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun WelcomePagePreview() {
+fun LaneDetectionTabPreview() {
     MyApplicationTheme {
-        WelcomePage(onContinueClick = {})
+        LaneDetectionTab(isCarTouchingRightLane = true, isCarTouchingLeftLane = false)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BlindSpotTabPreview() {
+    MyApplicationTheme {
+        BlindSpotTab(isObjectDetectedOnRightBlindSpot = false, isObjectDetectedOnLeftBlindSpot = true)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TrafficLightTabPreview() {
+    MyApplicationTheme {
+        TrafficLightTab(isRedLightDetected = true)
     }
 }
