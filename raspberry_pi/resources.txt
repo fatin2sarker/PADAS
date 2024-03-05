@@ -1,0 +1,9 @@
+# back and forth communication between two pi
+https://github.com/CorbinHelms/Blueraspberry_Chat/tree/main
+
+# bleak
+https://github.com/hbldh/bleak
+
+# raspberry pi scanner
+https://github.com/MiloszSkobejko/BLE_raspberry_pi_4_scanner
+
