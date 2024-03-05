@@ -6,7 +6,6 @@ import cv2
 from Arducam import *
 from ImageConvert import *
 
-
 #importing some useful packages
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -236,15 +235,9 @@ def process_image(image):
     result = weighted_img(line_seg_image, image, α=0.8, β=1., γ=0.)
     return result
 
-
-
-
-
-
 # CAMERA CODE (COPIED FROM DEMO)
 
 exit_ = False
-
 
 def sigint_handler(signum, frame):
     global exit_
