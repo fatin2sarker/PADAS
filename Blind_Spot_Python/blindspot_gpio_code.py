@@ -5,10 +5,11 @@ def main():
     led = LED(17)
 
     while True:
-        led.on()
-        sleep(1)
-        led.off()
-        sleep(1)
+        if led.is_active == true:
+            printf("check blindspot")
+        #sleep(1)
+        #led.off()
+        #sleep(1)
 
 if __name__ == "__main__":
     main()
