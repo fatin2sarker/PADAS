@@ -5,7 +5,7 @@ def main():
     led = LED(17)
 
     while True:
-        if led.is_active == true:
+        if led.is_active == True:
             printf("check blindspot")
         #sleep(1)
         #led.off()
