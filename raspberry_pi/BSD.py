@@ -13,7 +13,7 @@ def main():
     GPIO.setup(pin, GPIO.IN)
 
     # Initial state of the pin
-    prev_state = GPIO.input(pin)
+    GPIO.input(pin)
 
     try:
         # Create a Bluetooth server socket
@@ -41,27 +41,17 @@ def main():
                 current_state = GPIO.input(pin)
                 
                 # Check if the state has changed
-                if current_state != prev_state:
-                    if current_state == GPIO.HIGH:
-                        print("Check blind spot!")
-                        # Send "Check blind spot" to the client
-                        client_socket.send("Check blind spot".encode())
-                    else:
-                        print("All clear!")
-                        # Send "All clear" to the client
-                        client_socket.send("All clear".encode())
-                
-                # Update the previous state
-                prev_state = current_state
+                 if current_state == GPIO.HIGH:
+                    print("Check blind spot!")
+                    # Send "Check blind spot" to the client
+                    client_socket.send("Check blind spot".encode())
+                else:
+                    print("All clear!")
+                    # Send "All clear" to the client
+                    client_socket.send("All clear".encode())
                 
                 # Receive data from the client
                 received_data = client_socket.recv(1024).decode().strip()
-
-                # Check if received data is "check blind spot"
-                if received_data == "check blind spot":
-                    print("Received:", received_data)
-                elif received_data == "all clear":
-                    print("Received:", received_data)
                     
                 time.sleep(0.1)  # Delay for a short time to avoid busy waiting
 
