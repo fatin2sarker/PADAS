@@ -42,9 +42,14 @@ def main():
                 
                 # Check if the state has changed
                 if current_state != prev_state:
-                    print("check blind spot!")
-                    # Send "Check blind spot" to the client
-                    client_socket.send("Check blind spot".encode())
+                    if current_state == GPIO.HIGH:
+                        print("Check blind spot!")
+                        # Send "Check blind spot" to the client
+                        client_socket.send("Check blind spot".encode())
+                    else:
+                        print("All clear!")
+                        # Send "All clear" to the client
+                        client_socket.send("All clear".encode())
                 
                 # Update the previous state
                 prev_state = current_state
@@ -54,6 +59,8 @@ def main():
 
                 # Check if received data is "check blind spot"
                 if received_data == "check blind spot":
+                    print("Received:", received_data)
+                elif received_data == "all clear":
                     print("Received:", received_data)
                     
                 time.sleep(0.1)  # Delay for a short time to avoid busy waiting
