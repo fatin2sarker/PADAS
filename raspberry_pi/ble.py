@@ -23,7 +23,7 @@ print("Accepted connection from", address)
 while True:
     try:
         data = "Hello from Raspberry Pi"
-        client_socket.send(data)
+        client_socket.send(data.encode())
         print("Sent:", data)
         time.sleep(1)  # Wait for 1 second before sending the next message
     except KeyboardInterrupt:
@@ -34,3 +34,4 @@ client_socket.close()
 
 # Close the server socket
 server_socket.close()
+
